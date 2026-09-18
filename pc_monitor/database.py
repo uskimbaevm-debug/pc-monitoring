@@ -47,10 +47,26 @@ def insert_metrics(metrics):
     conn.commit()
     conn.close()
 
-if __name__ == "__main__":
-    from pc_monitor.collector import collect_metrics
+def get_metrics():
+    conn = connection()
 
+
+    cursor = conn.execute("""
+    SELECT * FROM metrics
+    ORDER BY id
+    """)
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return rows
+
+if __name__ == "__main__":
     create_table()
-    metrics = collect_metrics()
-    insert_metrics(metrics)
-    print("Замер сохранён:", metrics)
+    rows = get_metrics()
+
+    if not rows:
+        print("В базе пока нет замеров")
+    else:
+        for row in rows:
+            print(row)
